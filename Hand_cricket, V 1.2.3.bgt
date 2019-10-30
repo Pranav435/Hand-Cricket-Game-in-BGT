@@ -1,0 +1,529 @@
+//Hand cricket game
+
+// Includes and global variables:
+
+#include "dynamic_menu.bgt"
+#include "logger.bgt"
+int volume;
+sound menusound;
+string rawname;
+file namedata;
+file voicedata;
+string name;
+logger log;
+dynamic_menu voice;
+int target=0;
+dynamic_menu main_menu;
+int comp=0;
+string player_choice;
+int choice;
+int comp_status=0;
+int status=0;
+int x;
+sound music;
+sound crowd;
+// sound out;
+sound commentry;
+int option;
+
+// Main Function
+
+void main()
+{
+menusound.load("menu_sound.wav");
+if(!file_exists("data.txt"))
+{
+show_game_window("Hand cricket first-time initialization setup");
+alert("Welcome", "Welcome to the first-time initialization setup. You will be allowed to select your preferred screen-reader for the menu output, and enter your name which will be used for logs. Note that, even if you select SAPI as your preferred screen reader, you will still have to keep an external screen reader such as NVDA or JAWS running as the rest of the game is controlled via dialog boxes.");
+changevoice();
+//voicedata.open("data.tx
+}
+if(!file_exists("name.txt")||!file_exists("name.dat"))
+{
+name=input_box("Name", "Enter your name");
+namedata.open("name.txt", "w");
+namedata.write(name);
+alert("Hi", "Welcome" + name + "!");
+namedata.close();
+}
+file_encrypt("name.txt", "name.dat", "this_is_a_name");
+//file_decrypt("name.dat", "this_is_a_name");
+//namedata.open(
+//namedata.open("name.dat", "rb");
+//namedata.open("name.txt", "r");
+rawname=namedata.read();
+log.overwrite_file=true;
+log.date_all_entries=false;
+voicedata.open("data.txt", "r");
+string y=voicedata.read();
+//double z=string_to_number(y);
+//int a=z;
+music.load("intro.wav");
+crowd.load("background.wav");
+// out.load("bold1.wav");
+commentry.load("bold.wav");
+alert("Welcome", "Welcome to... Hand Cricket! The best way to simulate cricket on a PC!");
+show_game_window("Hand Cricket, V 1.2.3");
+main_menu.allow_escape=true;
+x=1;
+//alert("Hi", a);
+if(y=="0")
+{
+main_menu.set_speech_mode(0);
+}
+else if(y=="NVDA")
+{
+main_menu.set_speech_mode(NVDA);
+}
+else if(y=="JAWS")
+{
+install_keyhook;
+main_menu.set_speech_mode(JAWS);
+}
+else
+{
+alert("Error", "The speech mode of the main menu could not be set. Error: No such speech mode found. The speech mode will now switch to SAPI. Please try to correct this issue by changing the voice using the Change Main Menu Output Mode option, in the main menu.\nEngine error: " + get_last_error());
+}
+//main_menu.set_speech_mode(a);
+while(x!=5)
+{
+music.play_looped();
+volume=-1;
+music.volume=volume;
+music.pitch=30;
+if(key_pressed(KEY_RIGHT))
+{
+volume++;
+music.volume=volume;
+}
+else if(key_pressed(KEY_LEFT))
+{
+volume--;
+music.volume=volume;
+}
+main_menu.set_sound_object(menusound);
+main_menu.add_item_tts("Start Game");
+main_menu.add_item_tts("Help");
+main_menu.add_item_tts("Stupid mode, for noobs");
+main_menu.add_item_tts("Change main menu output mode");
+main_menu.add_item_tts("Exit");
+x=main_menu.run("Please choose an option with the up and down arrow keys and hit enter to select", true);
+if(x==0)
+{
+alert("Escape was pressed", "Thanks for playing! Exiting program");
+music.stop();
+break;
+}
+else if(x==1)
+{
+music.stop();
+play_round();
+}
+else if(x==2)
+{
+music.stop();
+help();
+}
+else if(x==3)
+{
+music.stop();
+stupid();
+// music.stop();
+// break;
+}
+else if(x==4)
+{
+music.stop();
+changevoice();
+}
+else
+{
+alert("Ok", "Thanks for playing! For more great games, visit WWW.audiogames.net. Hope to see you soon.");
+music.stop();
+break;
+}
+}
+}
+
+void play_round()
+{
+wait(5);
+alert("Sure", "Let's play hand_cricket");
+string toss=input_box("Toss", "Enter 1 for heads and 2 for tails");
+int comp_toss=random(1,2);
+if(toss==comp_toss)
+{
+alert("Yay", "You won");
+string choice=input_box("Choice", "Choose batting or bowling");
+if(choice=="bat")
+{
+batting(); // will be defined later
+}
+else if(choice=="bowl")
+{
+bowling();
+}
+}
+else
+{
+alert("Oh", "I win. I choose to...");
+int comp_choice=random(1,2);
+if(comp_choice==1)
+{
+alert("I choose to", "Bat");
+comp_batting();
+}
+else
+{
+alert("I choose to", "Bowl");
+comp_bowling();
+}
+}
+}
+
+void batting()
+{
+wait(200);
+alert("Yay", "Here we go");
+crowd.play_looped();
+crowd.volume=-8;
+status=0;
+while(true)
+{
+int comp=random(1,6);
+player_choice=input_box("Choice", "Enter a number from 1 to 6");
+double status_raw=string_to_number(player_choice);
+if(player_choice>6)
+{
+alert("Oops", "Out of range. This will result in the game terminating");
+break;
+}
+if(player_choice==comp)
+{
+sound stump;
+stump.load("stump.wav");
+stump.play();
+commentry.play();
+wait(1000);
+break;
+}
+status+=status_raw;
+alert("Score", "Your current score is: " + status + " runs");
+}
+target=status+1;
+alert("Ok", "You made " + status + "Runs, so I need " + target + "Runs to continue. Press enter to continue.");
+wait(5);
+
+alert("Let's go", "Now comes the chase");
+comp_status=0;
+while(true)
+{
+comp=random(1,6);
+player_choice=input_box("Choice", "Enter a number between 1,6");
+if(player_choice=="target")
+{
+alert("Target", "The target for me is: " + target + "runs.");
+continue;
+}
+if(player_choice==comp)
+{
+//alert("Shit!", "Ya got me!");
+sound compstump;
+compstump.load("stump.wav");
+compstump.play();
+commentry.play();
+wait(1500);
+break;
+}
+comp_status+=comp;
+alert("Score", "My Score is: " + comp_status + " runs");
+if(comp_status>=target)
+{
+alert("Yay", "I win! Good game!");
+break;
+}
+}
+if(comp_status>status)
+{
+alert("Final summery", "You scored " + status + "runs. In response, I scored " + comp_status + "runs, chasing a target of " + target + "runs. Thus, I win keeping my wicket.");
+}
+else
+{
+alert("Final summery", "You scored " + status + "runs. In response, chasing a target of " + target + "runs, I could only keep my wicket to score " + comp_status + "runs.");
+int winning=status-comp_status;
+alert("Congratulations!", "You have won this match by " + winning + "runs! Keep playing like this!");
+}
+if(comp_status>status)
+{
+log.header_text="Game summary";
+log.footer_text="Thus, A.I won against " + rawname + "";
+log.add_entry(rawname + " first");
+log.add_entry(rawname + "'s score = " + status + " runs.");
+log.add_entry("Target for A.I = " + target + " runs.");
+log.add_entry("In response:\nA.I's score = " + comp_status + " runs.");
+log.write("data.log", true);
+}
+else if(status>comp_status)
+{
+log.header_text="Game Summary";
+log.footer_text="Thus, " + rawname + " won the game";
+log.add_entry(rawname + " batted first");
+log.add_entry(rawname + "'s score = " + status + " runs");
+log.add_entry("Target for A.I. = " + target + " runs.\nA.I.'s score = " + comp_status + " runs.");
+log.write("data.log", true);
+}
+wait(5);
+crowd.stop();
+}
+
+void bowling()
+{
+wait(200);
+alert("Ok", "Let's go! You are now bowling first. Sing the national anthem of your favourite country, so we can get underway.");
+crowd.play_looped();
+comp_status=0;
+while(true)
+{
+player_choice=input_box("Choice", "Enter a number from 1 to 6");
+comp=random(1,6);
+if(player_choice==comp)
+{
+//alert("OOOOOOH!", "I couldn't protect then wicket from the slicing speed of the ball!");
+sound stump;
+stump.load("stump.wav");
+stump.play();
+commentry.play();
+wait(1500);
+
+break;
+}
+comp_status+=comp;
+alert("Score", "My score is " + comp_status +   " runs");
+}
+target=comp_status+1;
+alert("Ok", "Your target is... " + target + " runs! Good luck. Press the Okay button to continue");
+wait(5);
+alert("Yay", "Let's go for the chase");
+status=0;
+while(true)
+{
+comp=random(1,6);
+player_choice=input_box("Choice", "Enter a number between 1 to 6");
+double player_num=string_to_number(player_choice);
+if(player_num>6)
+{
+alert("Oops", "Try again");
+break;
+}
+if(player_choice=="target")
+{
+alert("Target", "The target for you is: " + target + "runs.");
+continue;
+}
+if(player_choice==comp)
+{
+//alert("Bold him!", "That's the end, of the famous player.");
+//stump.play();
+sound stump;
+stump.load("stump.wav");
+stump.play();
+commentry.play();
+wait(1500);
+break;
+}
+status+=player_num;
+alert("Score", "Your score is " + status + " runs");
+if(status>=target)
+{
+alert("Good", "You won!");
+break;
+}
+}
+if(comp_status>status)
+{
+alert("Final summery", "I batted first and made a score of " + comp_status + "runs. In reply, you made only " + status + "runs, before the stumps fell off, trying to chase a target of " + target + "runs.");
+int winning=comp_status-status;
+alert("Yay", "I won by " + winning + "Runs!");
+}
+else
+{
+alert("Final summery", "I batted first and made " + comp_status + "runs. In reply, you batted valiantly and made " + status + "runs, chasing a target of " + target + "runs.");
+alert("Congratulations!", "You won! Keep the runs flowing!");
+}
+crowd.stop();
+wait(5);
+}
+
+void comp_batting()
+{
+bowling();
+}
+void comp_bowling()
+{
+batting();
+}
+void help()
+{
+// screen_reader_speak_interrupt(NVDA,"Okay. First, please select the rate of which I should tell you the instructions. Press the Up arrow to increase or the Down Arrow to decrease.");
+// if(key_pressed(KEY_UP))
+// {
+// help.rate=5;
+// }
+// else
+{
+// help.rate=1;
+}
+// wait(1000);
+screen_reader_speak(NVDA, "Welcome to this quick help guide. I am TTs, your instructor. Now, I will tell you how to play Hand-cricket. Basically, this is a simulation of a cricket game. Like an unlimited overs game. You play against the computer. To know the rules of cricket, please consult the manual. You first have the toss, upon which you choose heads or tails. If you win, you can choose to bat or bowl first. If the computer wins, the A.I. will automatically choose. There are no commands to remember. Refer to the manual for more details");
+wait(12000);
+//while(help.speaking==true)
+// {
+// if(key_pressed(KEY_SPACE))
+// {
+// help.stop();
+// break;
+// }
+// }
+}
+/* void change_voice()
+{	
+alert("OK", "Now, you will be presented with a menu of screen-readers available");
+voice.allow_escape=false;
+voice.add_item_tts("SAPI");
+voice.add_item_tts("Jaws");
+int option=voice.run("Select a voice",true);
+if(option==1)
+{
+alert("OK", "Performing action. Press okay to continue");
+uninstall_keyhook;
+main_menu.set_speech_mode(SAPI);
+}
+else
+{
+alert("OK", "Performing action");
+}
+} */
+
+void stupid()
+{
+alert("Okaoiy", "Ief you wishh tu plaii dis mood! Letus Poda!");
+alert("Processing", "Pleas wait for the ai to cum");
+wait(1000);
+alert("Process complete", "You will pe transpirated to the stoopid mood");
+wait(500);
+alert("Welcome", "Yi aam a stoopeed ai. I canot plae handcricket.bgt  so tis ees fo nubs leke mie.");
+alert("ok", "yo will be bating fst.");
+sound stupid;
+stupid.stream("stupid.wav");
+alert("yeay", "ledus cum and plae");
+stupid.play_looped();
+stupid.volume=-6;
+comp=1;
+status=0;
+while(true)
+{
+player_choice=input_box("Choose", "Yenter yany Numbr");
+double status_raw=string_to_number(player_choice);
+if(status_raw==comp)
+{
+alert("Whoooooopees", "Yu year yout");
+break;
+}
+status+=status_raw;
+alert("Scoor", "You scoor is " + status + " runs...");
+}
+target=status+1;
+alert("yeey", "Yu made " + status + " runes. So I ned " + target + " runs to ven.");
+alert("Prosessing", "Yi yam tincing. Ples bear wit mie.");
+wait(2000);
+alert("wokey", "Yi am bac");
+alert("letus go", "nov cums the chase.");
+comp=6;
+comp_status=0;
+while(true)
+{
+player_choice=input_box("Numbr", "giv numbr");
+if(player_choice=="target")
+{
+alert("wow, ya vant target", "I ned " + target + " runs to ven");
+continue;
+}
+double comp_status_raw=string_to_number(player_choice);
+if(comp_status_raw==comp)
+{
+alert("Aiyo", "Yi im ut");
+break;
+}
+comp_status+=comp;
+if(comp_status>=target)
+{
+alert("wheey", "Yi wiin");
+break;
+}
+alert("run", "my run ees " + comp_status + " runs.");
+}
+stupid.stop();
+if(comp_status>status)
+{
+int compwin=comp_status-status;
+alert("aye", "yi wen bye " + compwin + " ruuns");
+}
+else if(comp_status==status)
+{
+alert("tye", "yit is tie");
+}
+else
+{
+int playerwin=status-comp_status;
+alert("Oke", "ye win by " + playerwin + " runs.");
+}
+wait(1500);
+}
+
+void changevoice()
+{
+voicedata.open("data.txt", "w");
+alert("Okay", "This will change the preferred voice for the Main Menu. The help option, however, will still use NVDA.");
+voice.allow_escape=true;
+voice.add_item_tts("SAPI");
+voice.add_item_tts("NVDA");
+voice.add_item_tts("JAWS");
+option=voice.run("Please choose a screen reader to use", true);
+if(option==0)
+{
+alert("Sorry", "Escape was pressed.");
+}
+else if(option==1)
+{
+ main_menu.set_speech_mode(0);
+alert("Okay", "That is done");
+voicedata.write("0");
+}
+else if(option==2)
+{
+main_menu.set_speech_mode(NVDA);
+alert("Okay", "The speech mode has been changed successfully to NVDA.");
+voicedata.write("NVDA");
+}
+else
+{
+//install keyhook;
+//main_menu.set_speech_mode(JAWS);
+//alert("Okay", "The speech mode has successfully been changed to Jaws.");
+// alert("Error", "Jaws is not installed on your system.");
+if(screen_reader_is_running(1))
+{
+main_menu.set_speech_mode(JAWS);
+alert("Ok", "The speech mode in the main menu has been successfully switched to Jaws");
+voicedata.write("JAWS");
+}
+else
+{
+alert("Error", "Jaws is not running");
+}
+//return choice;
+//voicedata.open("data.txt", "w");
+//voicedata.write(choice);
+voicedata.close();
+}
+}
