@@ -53,11 +53,21 @@ if(!file_exists("data.txt"))
 show_game_window("Hand cricket first-time initialization setup");
 alert("Welcome", "Welcome to the first-time initialization setup. You will be allowed to select your preferred screen-reader for the menu output, and enter your name which will be used for logs. Note that, even if you select SAPI as your preferred screen reader, you will still have to keep an external screen reader such as NVDA or JAWS running as the rest of the game is controlled via dialog boxes.");
 changevoice();
+//if(key_pressed(KEY_ESCAPE))
+//{
+//alert("Sorry", "Aboarding first time initialization setup.");
+//exit();
+//}
 //voicedata.open("data.tx
 }
 if(!file_exists("name.txt")||!file_exists("name.dat"))
 {
 name=input_box("Name", "Enter your name");
+//if(key_pressed(KEY_ESCAPE))
+//{
+//alert("Sorry", "Aboarding first-time initialization setup.");
+//exit();
+//}
 namedata.open("name.txt", "w");
 namedata.write(name);
 winning.play();
