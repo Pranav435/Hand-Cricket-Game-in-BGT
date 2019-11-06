@@ -5,10 +5,15 @@
 #include "dynamic_menu.bgt"
 #include "logger.bgt"
 #include "sound_positioning.bgt"
+#include "soundtrack.bgt"
 int volume=20;
 int y=40;
 sound menusound;
 string rawname;
+soundtrack win;
+soundtrack lose;
+sound winning;
+sound losing;
 file namedata;
 file voicedata;
 string name;
@@ -32,6 +37,16 @@ int option;
 
 void main()
 {
+string time="v70l4ECDF2ED";
+lose.add_channel(time);
+lose.write("time.wav");
+losing.load("time.wav");
+//losing.play();
+string winner="v65@2l20FEC+DGEFGE+";
+win.add_channel(winner);
+win.write("winning.wav");
+winning.load("winning.wav");
+//winning.play();
 menusound.load("menu_sound.wav");
 if(!file_exists("data.txt"))
 {
@@ -45,7 +60,8 @@ if(!file_exists("name.txt")||!file_exists("name.dat"))
 name=input_box("Name", "Enter your name");
 namedata.open("name.txt", "w");
 namedata.write(name);
-alert("Hi", "Welcome" + name + "!");
+winning.play();
+alert("Congratulations!", "First-time initialization setup was completed successfully! You will now be taken to the game.");
 namedata.close();
 }
 file_encrypt("name.txt", "name.dat", "this_is_a_name");
@@ -65,7 +81,7 @@ crowd.load("background.wav");
 // out.load("bold1.wav");
 commentry.load("bold.wav");
 alert("Welcome", "Welcome to... Hand Cricket! The best way to simulate cricket on a PC!");
-show_game_window("Hand Cricket, V 1.2.4");
+show_game_window("Hand Cricket, V 1.2.5");
 main_menu.allow_escape=true;
 x=1;
 //alert("Hi", a);
@@ -379,7 +395,7 @@ void help()
 }
 // wait(1000);
 screen_reader_speak(NVDA, "Welcome to this quick help guide. I am TTs, your instructor. Now, I will tell you how to play Hand-cricket. Basically, this is a simulation of a cricket game. Like an unlimited overs game. You play against the computer. To know the rules of cricket, please consult the manual. You first have the toss, upon which you choose heads or tails. If you win, you can choose to bat or bowl first. If the computer wins, the A.I. will automatically choose. There are no commands to remember. Refer to the manual for more details");
-wait(12000);
+wait(15000);
 //while(help.speaking==true)
 // {
 // if(key_pressed(KEY_SPACE))
@@ -412,7 +428,8 @@ void stupid()
 {
 alert("Okaoiy", "Ief you wishh tu plaii dis mood! Letus Poda!");
 alert("Processing", "Pleas wait for the ai to cum");
-wait(1000);
+losing.play_wait();
+//wait(1000);
 alert("Process complete", "You will pe transpirated to the stoopid mood");
 wait(500);
 alert("Welcome", "Yi aam a stoopeed ai. I canot plae handcricket.bgt  so tis ees fo nubs leke mie.");
