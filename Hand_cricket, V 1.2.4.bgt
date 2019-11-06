@@ -4,7 +4,9 @@
 
 #include "dynamic_menu.bgt"
 #include "logger.bgt"
-int volume;
+#include "sound_positioning.bgt"
+int volume=20;
+int y=40;
 sound menusound;
 string rawname;
 file namedata;
@@ -63,7 +65,7 @@ crowd.load("background.wav");
 // out.load("bold1.wav");
 commentry.load("bold.wav");
 alert("Welcome", "Welcome to... Hand Cricket! The best way to simulate cricket on a PC!");
-show_game_window("Hand Cricket, V 1.2.3");
+show_game_window("Hand Cricket, V 1.2.4");
 main_menu.allow_escape=true;
 x=1;
 //alert("Hi", a);
@@ -202,7 +204,9 @@ if(player_choice==comp)
 {
 sound stump;
 stump.load("stump.wav");
+position_sound_1d(stump, volume, y, 1.3, -6.5);
 stump.play();
+position_sound_1d(commentry,volume,y,-0.2,-1);
 commentry.play();
 wait(1000);
 break;
