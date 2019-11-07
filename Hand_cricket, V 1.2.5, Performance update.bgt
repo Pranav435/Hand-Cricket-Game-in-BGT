@@ -91,7 +91,7 @@ crowd.stream("background.wav");
 // out.load("bold1.wav");
 commentry.load("bold.wav");
 alert("Welcome", "Welcome to... Hand Cricket! The best way to simulate cricket on a PC!");
-show_game_window("Hand Cricket, V 1.2.5");
+show_game_window("Hand Cricket, V 1.2.5, Performance update");
 main_menu.allow_escape=true;
 x=1;
 //alert("Hi", a);
@@ -260,6 +260,7 @@ if(player_choice==comp)
 //alert("Shit!", "Ya got me!");
 sound compstump;
 compstump.load("stump.wav");
+position_sound_1d(compstump, volume, y, 1.3, -6.5);
 compstump.play();
 commentry.play();
 wait(1500);
@@ -326,6 +327,7 @@ if(player_choice==comp)
 //alert("OOOOOOH!", "I couldn't protect then wicket from the slicing speed of the ball!");
 sound stump;
 stump.load("stump.wav");
+position_sound_1d(stump, volume, y, 1.3, -6.5);
 stump.play();
 commentry.play();
 wait(1500);
@@ -361,6 +363,7 @@ if(player_choice==comp)
 //stump.play();
 sound stump;
 stump.load("stump.wav");
+position_sound_1d(stump, volume, y, 1.3, -6.5);
 stump.play();
 commentry.play();
 wait(1500);
