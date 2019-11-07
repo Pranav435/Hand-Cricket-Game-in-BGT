@@ -135,7 +135,7 @@ main_menu.add_item_tts("Help");
 main_menu.add_item_tts("Stupid mode, for noobs");
 main_menu.add_item_tts("Change main menu output mode");
 main_menu.add_item_tts("Exit");
-x=main_menu.run("Please choose an option with the up and down arrow keys and hit enter to select", true);
+x=main_menu.run_extended("Please choose an option with the up and down arrow keys and hit enter to select", true,1,true);
 if(x==0)
 {
 alert("Escape was pressed", "Thanks for playing! Exiting program");
