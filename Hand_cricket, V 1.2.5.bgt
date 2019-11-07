@@ -42,7 +42,7 @@ lose.add_channel(time);
 lose.write("time.wav");
 losing.load("time.wav");
 //losing.play();
-string winner="v65@2l20FEC+DGEFGE+";
+string winner="v75@2l20FEC+DGEFGE+";
 win.add_channel(winner);
 win.write("winning.wav");
 winning.load("winning.wav");
@@ -86,8 +86,8 @@ voicedata.open("data.txt", "r");
 string y=voicedata.read();
 //double z=string_to_number(y);
 //int a=z;
-music.load("intro.wav");
-crowd.load("background.wav");
+music.stream("intro.wav");
+crowd.stream("background.wav");
 // out.load("bold1.wav");
 commentry.load("bold.wav");
 alert("Welcome", "Welcome to... Hand Cricket! The best way to simulate cricket on a PC!");
@@ -116,7 +116,7 @@ alert("Error", "The speech mode of the main menu could not be set. Error: No suc
 while(x!=5)
 {
 music.play_looped();
-volume=-1;
+volume=-8;
 music.volume=volume;
 music.pitch=30;
 if(key_pressed(KEY_RIGHT))
@@ -243,7 +243,7 @@ alert("Score", "Your current score is: " + status + " runs");
 target=status+1;
 alert("Ok", "You made " + status + "Runs, so I need " + target + "Runs to continue. Press enter to continue.");
 wait(5);
-
+garbage_collect();
 alert("Let's go", "Now comes the chase");
 comp_status=0;
 while(true)
@@ -285,6 +285,7 @@ alert("Congratulations!", "You have won this match by " + winning + "runs! Keep 
 }
 if(comp_status>status)
 {
+garbage_collect();
 log.header_text="Game summary";
 log.footer_text="Thus, A.I won against " + rawname + "";
 log.add_entry(rawname + " first");
@@ -295,6 +296,7 @@ log.write("data.log", true);
 }
 else if(status>comp_status)
 {
+garbage_collect();
 log.header_text="Game Summary";
 log.footer_text="Thus, " + rawname + " won the game";
 log.add_entry(rawname + " batted first");
@@ -303,7 +305,10 @@ log.add_entry("Target for A.I. = " + target + " runs.\nA.I.'s score = " + comp_s
 log.write("data.log", true);
 }
 wait(5);
+
 crowd.stop();
+garbage_collect();
+wait(5);
 }
 
 void bowling()
