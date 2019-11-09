@@ -1,0 +1,99 @@
+network host;
+
+void main()
+{
+show_game_window("Game Server");
+tts_voice voice;
+if(host.setup_server(10000, 1, 100)==false)
+{
+voice.speak_wait("Error. The server could not be set up.");
+exit();
+}
+voice.speak("Welcome to the echo server. This server will accept up to 100 connections, and send back anything it receives.");
+network_event event;
+while(true)
+{
+event=host.request();
+if(event.type==event_connect)
+{
+voice.speak_interrupt("Peer number " + event.peer_id + " connected from " + host.get_peer_address(event.peer_id) + ".");
+voice.speak("Peers now connected: " + host.connected_peers + ".");
+}
+if(event.type==event_receive)
+{
+//double raw=string_to_number(event.message);
+int toss=random(0,1);
+string toss_choice;
+if(toss==0)
+{
+toss_choice="Tails";
+}
+else
+{
+toss_choice="Heads";
+}
+if(event.message==toss_choice)
+{
+voice.speak("Client won the toss");
+host.send_unreliable(server_id, "Client won the toss", 0);
+}
+else if(event.message!=toss_choice)
+{
+voice.speak("Host won the toss");
+host.send_unreliable(server_id, "Host won the toss", 0);
+}
+//voice.speak("Your choice is " + raw);
+//host.send_unreliable(event.peer_id, event.message, event.channel);
+voice.speak("Message received");
+}
+if(event.type==event_disconnect)
+{
+voice.speak_interrupt("Peer number " + event.peer_id + " just disconnected.");
+voice.speak("Peers now connected: " + host.connected_peers + ".");
+}
+if(key_down(KEY_LMENU) and key_pressed(KEY_F4))
+{
+voice.speak_interrupt("Exiting.");
+disconnect_everyone();
+// Just in case the voice hasn't finished speaking when this function returns, we wait for it to finish before actually exiting.
+while(voice.speaking==true)
+{
+wait(5);
+}
+exit();
+}
+wait(5);
+}
+}
+
+void disconnect_everyone()
+{
+
+/*
+This function first gets a list of all connected peers and disconnects them. Then it waits until it has received the same number of disconnect notifications as it sent out disconnect requests, and then returns. This may take some time, however, so we set up a timeout after which we return anyway.
+
+Note that we are not processing messages in this event loop. You will obviously want to do this if you have other connections to manage at the same time.
+*/
+
+timer timeout;
+uint[] peer_list=host.get_peer_list();
+int expected_disconnects=peer_list.length();
+for(uint i=0;i < peer_list.length();i++)
+{
+host.disconnect_peer(peer_list[i]);
+}
+network_event event;
+while(expected_disconnects>0)
+{
+event=host.request();
+if(event.type==event_disconnect)
+{
+expected_disconnects-=1;
+}
+if(timeout.elapsed>=1000)
+{
+break;
+}
+wait(5);
+}
+}
