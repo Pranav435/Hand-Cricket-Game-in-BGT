@@ -1,0 +1,84 @@
+Read-me for Hand-cricket
+
+We, at runtime terror, welcome you to... Hand cricket! A small, fun, open source audio game!
+
+Contents:
+1. Introduction
+
+2. What is hand cricket?
+
+3. Running the game
+3.1. First-time Initialization Setup.
+3.2. The main menu.
+
+4. The offline mode.
+
+5. Changing the TTS output mode for the main menu.
+
+6. The multiplayer mode.
+
+7. Credits.
+
+8. Contact.
+
+
+1. Introduction
+Welcome to... Hand cricket! This is a simple and open-source simulation of the commonly played Hand Cricket game, written in BGT. The game features:
+1. A main menu
+2. An offline mode
+3. A stupid mode, if you are just raging, where the computer will just put 1 while bowling and 6 while batting.
+4. A simple online mode without sounds, [works on LAN only].
+5. A quick way to change the output for the main menu only.
+
+
+2. What is hand Cricket?
+Hand cricket is a commonly played game among children. The game features both players putting certain numbers on their hands. If both numbers match, then the batsman is out. Else, then the number put by the batsman is added to his or her score. The final score becomes the target for the other player.
+
+3. Running the game.
+To run the game, first extract the Hand Cricket zip file and run either Hand_cricket.bgt, if you have the BGT engine installed and want to check the main file out, or Hand_cricket.exe if you do not have the BGT engine installed and just want to play.
+3.1. The first-time Initialization setup
+When you first run the game, you will be put into the first-time initialization setup, in which you select your favourite screen-reader for the output for the main menu, and enter your name which will be used for logs. The setup itself is pretty self-explanatory.
+
+3.2. The main menu
+After the setup, you will be put into the main menu. This menu contains the following options:
+Start game, starts the offline mode
+Help: Gives you a brief introduction to the game.
+Stupid mode: Mentioned earlier, puts you into stupid mode.
+Change main menu output mode: Lets you change the output for the main menu.
+Multiplayer mode: Lets you play online locally with others connected to the same wi-fi network as you.
+Exit: Well, self-explanatory. The escape key can also be used for this purpose.
+
+4. The offline mode
+In this mode, you play against the computer. Don't worry, you are not playing against a good A.I, but rather against a very random opponent. You first have the toss, where you choose heads or tails. If you win, you can choose to bat or bowl first. If the computer wins, it will automatically choose. The only command to remember while the second innings is going on is the "target" command, which, well, tells you the target. Note that, even if you selected SAPI as your screen reader, you should still keep an external screen reader running as the rest of the game is controlled via dialog boxes.
+
+5. Changing the TTS output mode for the main menu
+This small menu allows you to select the output for the main menu only. The rest of the game does require a screen reader for the dialog boxes. You can choose from JAWS, NVDA or SAPI.
+
+6. The multiplayer mode
+This is a peer-to-peer hosting mode. One person will be the host and the other will be the client. This only works if both the players are connected to the same network.
+
+7. Credits:
+Thanks to the following people for putting this together:
+Pranav Savla: Main game design.
+Kavin Muthuselvan: Multiplayer mode design.
+
+Also thanks to our whole Beta testing team, comprising of:
+Brian Oslo and Dave Martin
+For being as critical and looking for problems.
+
+Also thanks to you, for playing, and contributing to the development of this game.
+
+8. Contact
+You can get in touch with us via:
+
+Phone:
++91 7022129798
+or
++91 7090687690
+
+E-mail:
+pranavsavla2003@gmail.com
+or
+kavin.muthuselvan@gmail.com
+
+Happy playing!

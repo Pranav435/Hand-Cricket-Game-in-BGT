@@ -1,9 +1,14 @@
+int score=0;
+int scorefinal=0;
+int oppfinal=0;
 bool notout=true;
-bool perm;
+string oppchoice;
+string current;
+string perm;
 string winner;
 network host;
 
-void main()
+void server()
 {
 //show_game_window("Game Server");
 show_game_window("Hand-cricket multiplayer server");
@@ -51,9 +56,6 @@ winner="Host";
 host.send_unreliable(event.peer_id, "Host won the toss", 0);
 }
 break;
-//voice.speak("Your choice is " + raw);
-//host.send_unreliable(event.peer_id, event.message, event.channel);
-//voice.speak("Message received");
 }
 if(event.type==event_disconnect)
 {
@@ -63,7 +65,8 @@ voice.speak("Peers now connected: " + host.connected_peers + ".");
 if(key_down(KEY_LMENU) and key_pressed(KEY_F4))
 {
 voice.speak_interrupt("Exiting.");
-disconnect_everyone();
+break;
+//disconnect_everyone();
 // Just in case the voice hasn't finished speaking when this function returns, we wait for it to finish before actually exiting.
 while(voice.speaking==true)
 {
@@ -79,7 +82,7 @@ if(winner=="Host")
 {
 voice.speak("Do you want to bat or bowl first?");
 string tosschoice=input_box("Choice", "Do you want to bat or bowl first?");
-perm=true;
+perm="true";
 wait(5);
 host.send_unreliable(event.peer_id, tosschoice, 0);
 winner=tosschoice;
@@ -91,13 +94,13 @@ while(true)
 event=host.request();
 if(event.type==event_receive)
 {
-
 voice.speak_wait("Client chose to " + event.message + " first.");
-perm=false;
+perm="false";
 break;
 }
 }
-if(perm)
+}
+if(perm=="true")
 {
 voice.speak("Ok, you will " + winner + " first.");
 if(winner=="Bat")
@@ -126,25 +129,89 @@ double clientraw=string_to_number(client);
 if(clientraw==numraw)
 {
 voice.speak_wait("Oops! You, Are, Out!");
+voice.speak_wait("Your final score is " + score + " runs.");
+host.send_unreliable(event.peer_id, "out", 0);
+scorefinal=score;
+notout=false;
+break;
+}
+else
+{
+voice.speak_wait("You are not out");
+host.send_unreliable(event.peer_id, "not out", 0);
+}
+score+=numraw;
+string wordscore=number_to_words(score, false);
+host.send_unreliable(event.peer_id, wordscore, 0);
+voice.speak_interrupt_wait("So far, your score is " + score + " runs.");
+break;
+}
+}
+voice.speak("Now, time for the chase!");
+notout=true;
+while(notout)
+{
+string num=input_box("Number", "Enter a number from 1 to 6");
+double numraw=string_to_number(num);
+if(numraw>6)
+{
+alert("DUDE!!!", "ENTER A NUMBER FROM 1 TO 6 I SAID! DON'T YOU GET INSTRUCTIONS???");
+continue;
+}
+if(numraw<1)
+{
+alert("MAN", "WHY DO YOU WANT NEGATIVE SCORES???");
+continue;
+}
+host.send_unreliable(event.peer_id, numraw, 0);
+while(true)
+{
+event=host.request();
+if(event.type==event_receive)
+{
+voice.speak("Opponent is " + event.message);
+if(event.message=="out")
+{
+voice.speak_wait("Opponent is out");
+while(true)
+{
+event=host.request();
+{
+if(event.type==event_receive)
+{
+double oppraw=string_to_number(event.message);
+oppfinal=oppraw;
+}
+}
+}
 notout=false;
 }
-
+break;
+}
+}
+if(notout)
+{
+while(true)
+{
+event=host.request();
+if(event.type==event_receive)
+{
+voice.speak_wait("So far, the oppenent's score is " + event.message + " runs");
+break;
+}
+}
+}
+}
 }
 
-//else
-//{
-//alert("Error", "Could not compare host and client. Exiting");
-//exit();
-//}
 }
+}
+}
+
+
+
 void disconnect_everyone()
 {
-
-/*
-This function first gets a list of all connected peers and disconnects them. Then it waits until it has received the same number of disconnect notifications as it sent out disconnect requests, and then returns. This may take some time, however, so we set up a timeout after which we return anyway.
-
-Note that we are not processing messages in this event loop. You will obviously want to do this if you have other connections to manage at the same time.
-*/
 
 timer timeout;
 uint[] peer_list=host.get_peer_list();

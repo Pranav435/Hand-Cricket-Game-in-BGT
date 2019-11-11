@@ -1,0 +1,279 @@
+//bool perm;
+//string current;
+//int score=0;
+//bool notout=true;
+//string winner;
+//network host;
+//string oppchoice;
+
+void client()
+{
+
+show_game_window("Game Client");
+tts_voice voice;
+voice.set_current_voice(1);
+uint server_id=0;  // This is used to store the ID of the remote peer that will be our server.
+if(host.setup_client(1, 1)==false)
+{
+voice.speak_wait("Error. The client could not be set up.");
+exit();
+}
+voice.speak("Client started.");
+voice.speak("Please enter the IP address or host name that you wish to connect to.");
+string address=input_box("Address", "Please enter the host name or address to connect to.");
+if(address=="")
+{
+voice.speak_interrupt_wait("Exiting.");
+exit();
+}
+voice.speak_interrupt("Connecting, please wait.");
+host.connect(address, 10000);
+network_event event;
+
+// In this loop, we just wait for either a connect or disconnect event as this is always the first thing that we'll get.
+
+while(true)
+{
+event=host.request();
+if(event.type==event_connect)
+{
+voice.speak_interrupt("The connection to " + host.get_peer_address(event.peer_id) + " succeeded!");
+server_id=event.peer_id;
+string choice=input_box("Choice", "Enter Heads or Tails");
+
+host.send_unreliable(server_id, choice, 0);
+break;
+}
+if(event.type==event_disconnect)
+{
+voice.speak_interrupt_wait("The connection to " + host.get_peer_address(event.peer_id) + " failed. Exiting.");
+exit();
+}
+if(key_down(KEY_LMENU) and key_pressed(KEY_F4))
+{
+host.destroy();
+voice.speak_interrupt_wait("Exiting.");
+exit();
+}
+wait(5);
+}
+
+while(true)
+{
+event=host.request();
+if(event.type==event_receive)
+{
+current=event.message;
+voice.speak(event.message);
+break;
+}
+}
+
+if(current=="Client won the toss")
+{
+winner="Client";
+}
+else
+{
+winner="Host";
+}
+
+
+
+if(winner=="Client")
+{
+voice.speak("Do you want to bat or bowl first?");
+string tosschoice=input_box("Choice", "Do you want to bat or bowl first?");
+perm=true;
+wait(5);
+host.send_unreliable(server_id, tosschoice, 0);
+winner=tosschoice;
+}
+else if(winner=="Host")
+{
+while(true)
+{
+event=host.request();
+if(event.type==event_receive)
+{
+voice.speak_wait("Host chose to " + event.message + " first.");
+oppchoice=event.message;
+perm=false;
+break;
+}
+}
+if(perm==true)
+{
+voice.speak("Ok, you will " + winner + " first.");
+if(winner=="Bat")
+{
+while(notout)
+{
+string num=input_box("Number", "Enter a number from 1 to 6");
+double numraw=string_to_number(num);
+if(numraw>6)
+{
+alert("DUDE!!!", "ENTER A NUMBER FROM 1 TO 6 I SAID! DON'T YOU GET INSTRUCTIONS???");
+continue;
+}
+if(numraw<1)
+{
+alert("MAN", "WHY DO YOU WANT NEGATIVE SCORES???");
+continue;
+}
+while(true)
+{
+event=host.request();
+if(event.type==event_receive)
+{
+string client=event.message;
+double clientraw=string_to_number(client);
+if(clientraw==numraw)
+{
+voice.speak_wait("Oops! You, Are, Out!");
+voice.speak_wait("Your final score is " + score + " runs.");
+notout=false;
+break;
+}
+score+=numraw;
+string wordscore=number_to_words(score, false);
+host.send_unreliable(event.peer_id, wordscore, 0);
+voice.speak_interrupt_wait("So far, your score is " + score + " runs.");
+break;
+}
+}
+}
+
+}
+}
+else
+{
+if(oppchoice=="Bat")
+{
+while(notout)
+{
+string num=input_box("Number", "Enter a number from 1 to 6");
+double numraw=string_to_number(num);
+if(numraw>6)
+{
+alert("DUDE!!!", "ENTER A NUMBER FROM 1 TO 6 I SAID! DON'T YOU GET INSTRUCTIONS???");
+continue;
+}
+if(numraw<1)
+{
+alert("MAN", "WHY DO YOU WANT NEGATIVE SCORES???");
+continue;
+}
+host.send_unreliable(server_id, numraw, 0);
+while(true)
+{
+event=host.request();
+if(event.type==event_receive)
+{
+voice.speak("Opponent is " + event.message);
+if(event.message=="out")
+{
+notout=false;
+}
+break;
+}
+}
+if(notout)
+{
+while(true)
+{
+event=host.request();
+if(event.type==event_receive)
+{
+voice.speak_wait("So far, the oppenent's score is " + event.message + " runs");
+break;
+}
+}
+}
+voice.speak_wait("Now, time for the chase!");
+notout=true;
+while(notout)
+{
+string num=input_box("Number", "Enter a number from 1 to 6");
+double numraw=string_to_number(num);
+if(numraw>6)
+{
+alert("DUDE!!!", "ENTER A NUMBER FROM 1 TO 6 I SAID! DON'T YOU GET INSTRUCTIONS???");
+continue;
+}
+if(numraw<1)
+{
+alert("MAN", "WHY DO YOU WANT NEGATIVE SCORES???");
+continue;
+}
+while(true)
+{
+event=host.request();
+if(event.type==event_receive)
+{
+string client=event.message;
+double clientraw=string_to_number(client);
+if(clientraw==numraw)
+{
+voice.speak_wait("Oops! You, Are, Out!");
+voice.speak_wait("Your final score is " + score + " runs.");
+host.send_unreliable(server_id, "out", 0);
+string scoreraw=number_to_hex_string(score);
+host.send_unreliable(server_id, scoreraw, 0);
+notout=false;
+break;
+}
+else
+{
+voice.speak_wait("You are not out");
+host.send_unreliable(server_id, "not out", 0);
+}
+score+=numraw;
+string wordscore=number_to_words(score, false);
+host.send_unreliable(server_id, wordscore, 0);
+voice.speak_interrupt_wait("So far, your score is " + score + " runs.");
+break;
+}
+}
+}
+}
+}
+}
+}
+}
+
+
+//void disconnect_everyone()
+//{
+
+/*
+This is the exact same function as the one found in the server, as it works equally well for both.
+
+This function first gets a list of all connected peers and disconnects them. Then it waits until it has received the same number of disconnect notifications as it sent out disconnect requests, and then returns. This may take some time, however, so we set up a timeout after which we return anyway.
+
+Note that we are not processing messages in this event loop. You will obviously want to do this if you have other connections to manage at the same time.
+*/
+
+//timer timeout;
+//uint[] peer_list=host.get_peer_list();
+//int expected_disconnects=peer_list.length();
+//for(uint i=0;i < peer_list.length();i++)
+//{
+//host.disconnect_peer(peer_list[i]);
+//}
+//network_event event;
+//while(expected_disconnects>0)
+//{
+//event=host.request();
+//if(event.type==event_disconnect)
+//{
+//expected_disconnects-=1;
+//}
+//if(timeout.elapsed>=1000)
+//{
+//break;
+//}
+//wait(5);
+//}
+//}
+

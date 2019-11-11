@@ -2,10 +2,15 @@
 
 // Includes and global variables:
 
+#include "Host.bgt"
+#include "Client.bgt"
 #include "dynamic_menu.bgt"
 #include "logger.bgt"
 #include "sound_positioning.bgt"
 #include "soundtrack.bgt"
+
+dynamic_menu multi;
+int multichoice;
 int volume=20;
 int y=40;
 sound menusound;
@@ -93,7 +98,7 @@ commentry.stream("bold.wav");
 //menusound.load("bold1.wav");
 
 alert("Welcome", "Welcome to... Hand Cricket! The best way to simulate cricket on a PC!");
-show_game_window("Hand Cricket, V 1.2.5, Main Menu update");
+show_game_window("Hand Cricket, V 1.0.0 Public");
 main_menu.allow_escape=true;
 x=1;
 //alert("Hi", a);
@@ -115,7 +120,7 @@ else
 alert("Error", "The speech mode of the main menu could not be set. Error: No such speech mode found. The speech mode will now switch to SAPI. Please try to correct this issue by changing the voice using the Change Main Menu Output Mode option, in the main menu.\nEngine error: " + get_last_error());
 }
 //main_menu.set_speech_mode(a);
-while(x!=5)
+while(x!=6)
 {
 music.play_looped();
 volume=-8;
@@ -135,6 +140,7 @@ music.volume=volume;
 main_menu.add_item_tts("Start Game");
 main_menu.add_item_tts("Help");
 main_menu.add_item_tts("Stupid mode, for noobs");
+main_menu.add_item_tts("Multiplayer mode");
 main_menu.add_item_tts("Change main menu output mode");
 main_menu.add_item_tts("Exit");
 x=main_menu.run_extended("Please choose an option with the up and down arrow keys and hit enter to select", true,1,true);
@@ -162,6 +168,11 @@ stupid();
 // break;
 }
 else if(x==4)
+{
+music.stop();
+multiplayer();
+}
+else if(x==5)
 {
 music.stop();
 changevoice();
@@ -572,5 +583,23 @@ alert("Error", "Jaws is not running");
 //voicedata.open("data.txt", "w");
 //voicedata.write(choice);
 voicedata.close();
+}
+}
+
+void multiplayer()
+{
+tts_voice intro;
+intro.speak_wait("Welcome to the first version of this multiplayer mode.");
+multi.allow_escape=false;
+multi.add_item_tts("Host");
+multi.add_item_tts("Join");
+multichoice=multi.run("Do you want to host or join?",true);
+if(multichoice==1)
+{
+server();
+}
+else
+{
+client();
 }
 }
